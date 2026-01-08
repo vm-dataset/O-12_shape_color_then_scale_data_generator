@@ -1,139 +1,145 @@
-# Template Data Generator 🎲
+# Shape Color-Then-Scale Task Generator
 
-A minimal template for creating synthetic reasoning task generators. Fork this and customize it for your own task (maze, sudoku, rotation, etc.).
+A specialized data generator for creating **two-step sequential visual reasoning tasks** where shapes undergo color transformation followed by scale transformation.
 
----
+## 🎯 Task Format
+
+This generator creates visual analogies in the **A→B→C :: D→?→?** format:
+
+- **Example Sequence (A→B→C)**: Shows the complete two-step transformation
+  - **A**: Original shape (e.g., blue small circle)
+  - **B**: After step 1 - color change (e.g., red small circle)  
+  - **C**: After step 2 - scale change (e.g., red large circle)
+
+- **Question Sequence (D→?→?)**: User must solve both steps
+  - **D**: Original shape (e.g., blue small square)
+  - **First ?**: Apply step 1 - color change (e.g., red small square)
+  - **Second ?**: Apply step 2 - scale change (e.g., red large square)
+
+## 🌟 Key Features
+
+### Sequential Two-Step Transformations
+- **Step 1**: Color transformation (blue → red, green → orange, etc.)
+- **Step 2**: Scale transformation (small → large, medium → extra_large, etc.)
+- **Consistent Pattern**: Both example and question follow identical transformation sequence
+
+### Enhanced Visual Design
+- **Optimized Layout**: 800×400 image format for better horizontal spacing
+- **Improved Spacing**: 80% space for shapes, 20% for arrows to prevent overlap
+- **Clear Separation**: Proper margins between all visual elements
+- **Moderate Scaling**: Scale factors from 0.8× to 1.6× to maintain visual clarity
+
+### Rich Animation
+- **Two-Step Video**: Shows sequential revelation of both question marks
+- **Step 1 Animation**: First ? gradually changes color (25 frames)
+- **Step 2 Animation**: Second ? gradually changes scale (25 frames)
+- **Smooth Transitions**: Clear visual progression through transformation steps
+
+## 🎨 Visual Elements
+
+### Shapes
+- **10 Shape Types**: square, triangle, circle, diamond, pentagon, hexagon, rectangle, oval, star, heart
+- **Consistent Style**: All shapes have black outlines for clarity
+
+### Colors
+- **6 Distinct Colors**: blue, red, green, orange, purple, teal
+- **High Contrast**: Colors chosen for maximum visual distinction
+
+### Scale Levels
+- **4 Scale Factors**: small (0.8×), medium (1.0×), large (1.3×), extra_large (1.6×)
+- **Balanced Range**: Significant differences while preventing overlap
 
 ## 🚀 Quick Start
 
+### Installation
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-org/your-task-generator.git
-cd your-task-generator
-
-# 2. Create and activate virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# 3. Install dependencies
-pip install --upgrade pip
-pip install -r requirements.txt
 pip install -e .
-
-# 4. Generate tasks
-python examples/generate.py --num-samples 50
 ```
+
+### Generate Tasks
+```bash
+python examples/generate.py --num-samples 10 --output data/my_tasks
+```
+
+### Configuration
+Edit `src/config.py` to customize:
+- Image dimensions (default: 800×400)
+- Shape sizes and margins
+- Video frame rates
+- Output settings
+
+## 📁 Output Structure
+
+Each generated task includes:
+```
+task_id/
+├── prompt.txt           # Task instruction
+└── ground_truth.mp4     # Animated solution showing both steps
+```
+
+## 🎬 Video Animation Sequence
+
+1. **Initial State**: Shows A→B→C :: D→?→? layout
+2. **Step 1 Animation**: First ? reveals with color transformation
+3. **Step 2 Animation**: Second ? reveals with scale transformation  
+4. **Final State**: Complete sequence A→B→C :: D→E→F
+
+## 🔧 Customization
+
+### Adding New Transformations
+Modify `valid_transformations` in `src/generator.py`:
+```python
+self.valid_transformations = [
+    ("blue", "red", "small", "large"),      # Color + scale up
+    ("red", "blue", "large", "small"),      # Color + scale down
+    # Add your combinations...
+]
+```
+
+### Adjusting Visual Spacing
+Update spacing parameters in the rendering functions:
+```python
+shape_spacing = step_width * 0.8  # 80% for shapes
+arrow_width = step_width * 0.2    # 20% for arrows
+```
+
+## 🧠 Cognitive Challenge
+
+This task type tests:
+- **Sequential Reasoning**: Understanding multi-step transformation patterns
+- **Pattern Recognition**: Identifying consistent transformation rules
+- **Visual Analysis**: Distinguishing color and scale changes
+- **Analogical Thinking**: Applying learned patterns to new shapes
+
+## 📊 Task Complexity
+
+- **Transformation Steps**: 2 (color then scale)
+- **Shape Variations**: 10 different shapes
+- **Color Combinations**: 12 valid transformation pairs
+- **Scale Combinations**: 12 valid transformation pairs
+- **Total Unique Tasks**: 10 × 10 × 12 = 1,200 possible combinations
+
+## 🎯 Use Cases
+
+- **Visual Reasoning Research**: Multi-step transformation understanding
+- **AI Training Data**: Sequential pattern recognition tasks
+- **Cognitive Assessment**: Two-step analogical reasoning evaluation
+- **Educational Tools**: Teaching sequential logical thinking
+
+## 🔍 Example Task
+
+**Visual Layout:**
+```
+blue_small_circle → red_small_circle → red_large_circle
+blue_small_square →        ?         →        ?
+```
+
+**Solution:**
+- First ?: red_small_square (apply color change)
+- Second ?: red_large_square (apply scale change)
+
+**Reasoning:** The pattern shows color change first (blue→red), then scale change (small→large). Apply the same sequence to the square.
 
 ---
 
-## 📁 Structure
-
-```
-template-data-generator/
-├── core/                    # ✅ KEEP: Standard utilities
-│   ├── base_generator.py   # Abstract base class
-│   ├── schemas.py          # Pydantic models
-│   ├── image_utils.py      # Image helpers
-│   ├── video_utils.py      # Video generation
-│   └── output_writer.py    # File output
-├── src/                     # ⚠️ CUSTOMIZE: Your task logic
-│   ├── generator.py        # Your task generator
-│   ├── prompts.py          # Your prompt templates
-│   └── config.py           # Your configuration
-├── examples/
-│   └── generate.py         # Entry point
-└── data/questions/         # Generated output
-```
-
----
-
-## 📦 Output Format
-
-Every generator produces:
-
-```
-data/questions/{domain}_task/{task_id}/
-├── first_frame.png          # Initial state (REQUIRED)
-├── final_frame.png          # Goal state (or goal.txt)
-├── prompt.txt               # Instructions (REQUIRED)
-└── ground_truth.mp4         # Solution video (OPTIONAL)
-```
-
----
-
-## 🎨 Customization (3 Files to Modify)
-
-### 1. Update `src/generator.py`
-
-Replace the example chess generator with your task:
-
-```python
-from core import BaseGenerator, TaskPair, ImageRenderer
-
-class MazeGenerator(BaseGenerator):
-    def __init__(self, config):
-        super().__init__(config)
-        self.renderer = ImageRenderer(config.image_size)
-    
-    def generate_task_pair(self, task_id: str) -> TaskPair:
-        # 1. Generate your problem
-        maze = self.create_maze()
-        
-        # 2. Solve it
-        solution = self.solve_maze(maze)
-        
-        # 3. Render images
-        first_image = self.render_maze(maze)
-        final_image = self.render_maze_with_solution(maze, solution)
-        
-        # 4. Create TaskPair
-        return TaskPair(
-            task_id=task_id,
-            domain=self.config.domain,
-            prompt=self.select_prompt(),
-            first_image=first_image,
-            final_image=final_image,
-            ground_truth_video=None  # Optional
-        )
-```
-
-### 2. Update `src/prompts.py`
-
-Replace chess prompts with yours:
-
-```python
-PROMPTS = {
-    "default": [
-        "Animate a path from start to goal through the maze.",
-        "Show the solution route navigating through corridors.",
-    ]
-}
-
-def get_prompt(task_type: str = "default") -> str:
-    prompts = PROMPTS.get(task_type, PROMPTS["default"])
-    return random.choice(prompts)
-```
-
-### 3. Update `src/config.py`
-
-**All hyperparameters go here** - both general and task-specific:
-
-```python
-from core import GenerationConfig
-from pydantic import Field
-
-class TaskConfig(GenerationConfig):
-    """Your task-specific configuration."""
-    # Inherits: num_samples, domain, seed, output_dir, image_size
-    
-    # Override defaults
-    domain: str = Field(default="maze")
-    image_size: tuple[int, int] = Field(default=(512, 512))
-    
-    # Task-specific hyperparameters
-    grid_size: int = Field(default=10, description="Maze grid size")
-    wall_thickness: int = Field(default=2, description="Wall thickness")
-    difficulty: str = Field(default="medium", description="easy/medium/hard")
-```
-
-**Single entry point:** `python examples/generate.py --num-samples 50`
+Built with the Template Data Generator framework for creating high-quality visual reasoning datasets.
